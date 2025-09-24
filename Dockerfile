@@ -5,9 +5,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# ffmpeg is required for audio conversion
+# ffmpeg for audio; libgomp1 for CTranslate2 (OpenMP)
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ffmpeg && \
+    apt-get install -y --no-install-recommends ffmpeg libgomp1 && \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
@@ -16,6 +16,5 @@ RUN python -m pip install --upgrade pip setuptools wheel && \
 
 COPY . .
 
-EXPOSE 8000
 EXPOSE 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info"]
