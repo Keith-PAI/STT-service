@@ -1,20 +1,27 @@
-# Simple CPU image for Faster-Whisper API
 FROM python:3.11-slim
 
-# ffmpeg for audio conversions
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
 WORKDIR /app
-COPY requirements.txt ./
+# still in ~/dev/apps/fw-selfhost-starter/server
+cat > Dockerfile <<'EOF'
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# ffmpeg is required for audio conversion
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ffmpeg && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py ./
-
-# Model/env defaults
-ENV FW_MODEL=base
-ENV FW_COMPUTE=int8
-# Set CORS for your WP origin (comma-separated list). For testing, "*" is okay.
-ENV FW_CORS=*
+COPY . .
 
 EXPOSE 8000
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", 8000]
+CMD ["sh","-lc","uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
