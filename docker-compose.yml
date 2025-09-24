@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  fw1:
+    build: .
+    container_name: fw1
+    environment:
+      - FW_MODEL=base
+      - FW_COMPUTE=int8
+      - FW_CORS=*
+    ports:
+      - "8001:8000"
+  fw2:
+    build: .
+    container_name: fw2
+    environment:
+      - FW_MODEL=base
+      - FW_COMPUTE=int8
+      - FW_CORS=*
+    ports:
+      - "8002:8000"
